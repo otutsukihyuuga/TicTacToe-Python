@@ -12,8 +12,6 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 scoreBoard = []
-boardSize = 4
-showScoreBoard = False
 notAppended = True
 
 screen = pygame.display.set_mode(size)
@@ -37,49 +35,8 @@ while True:
 
     screen.fill(black)
     
-    #display score board
-    if showScoreBoard:
-        
-        #draw score board
-        title = largeFont.render("Score Board", True, white)
-        titleRect = title.get_rect()
-        titleRect.center = ((width / 2), 50)
-        screen.blit(title, titleRect)
-        
-        scoreTitle = mediumFont.render(" X | O ", True, white)
-        scoreTitleRect = scoreTitle.get_rect()
-        scoreTitleRect.center = ((width / 2), 100)
-        screen.blit(scoreTitle, scoreTitleRect)
-        
-        for i in range( len(scoreBoard) ):
-            if scoreBoard[i] == None:
-                score = "TIE | TIE"
-            elif scoreBoard[i] == "X":
-                score = "WIN | LOSE"
-            else:
-                score = "LOSE| WIN"
-            score = mediumFont.render(score, True, white)
-            scoreRect = score.get_rect()
-            scoreRect.center = ((width / 2), 150 + 50 * i)
-            screen.blit(score, scoreRect)
-        
-        againButton = pygame.Rect(width / 3, height - 65, width / 3, 50)
-        again = mediumFont.render("Play Again", True, black)
-        againRect = again.get_rect()
-        againRect.center = againButton.center
-        pygame.draw.rect(screen, white, againButton)
-        screen.blit(again, againRect)
-        
-        click, _, _ = pygame.mouse.get_pressed()
-        if click == 1:
-            mouse = pygame.mouse.get_pos()
-            if againButton.collidepoint(mouse):
-                time.sleep(0.2)
-                board = ttt.initial_state()
-                showScoreBoard = False
-
     # Let user select what to play against
-    elif is_mult is None:
+    if is_mult is None:
 
         # Draw multiplayer title
         mtitle = largeFont.render("Play Tic-Tac-Toe", True, white)
@@ -145,8 +102,6 @@ while True:
                     winner = ttt.winner(board)
                     if notAppended:
                         scoreBoard.append(winner)
-                        if len(scoreBoard) > boardSize:
-                            del scoreBoard[0]
                         notAppended = False
                     if winner is None:
                         title = "Game Over: Tie."
@@ -172,27 +127,43 @@ while True:
                                 which_user = not which_user
 
                 if game_over:
-                    againButton = pygame.Rect(width / 6 - 10, height - 65, width / 3, 50)
-                    scoreBoardButton = pygame.Rect(width / 2 + 10, height - 65, width / 3, 50)   
+                    
+                    #scoreboard
+                    tie=x=o=0
+                    for i in range( len(scoreBoard) ):
+                        if scoreBoard[i] == None:
+                            tie += 1
+                        elif scoreBoard[i] == "X":
+                            x += 1
+                        else:
+                            o += 1
+                    xscore = mediumFont.render(f"X   : {x}", True, white)
+                    oscore = mediumFont.render(f"O   : {o}", True, white)
+                    tiescore = mediumFont.render(f"TIE : {tie}", True, white)
+                    xscoreRect = xscore.get_rect()
+                    oscoreRect = oscore.get_rect()
+                    tiescoreRect = tiescore.get_rect()
+                    xscoreRect.center = (width / 2 - 2.5*tile_size - 4, height/2 - 1.5*tile_size + 90)
+                    oscoreRect.center = (width / 2 - 2.5*tile_size - 6, height/2 - 1.5*tile_size + 120)
+                    tiescoreRect.center = (width / 2 - 2.5*tile_size - 6, height/2 - 1.5*tile_size + 150)
+                    screen.blit(xscore, xscoreRect)
+                    screen.blit(oscore, oscoreRect)
+                    screen.blit(tiescore, tiescoreRect)
+                    
+                    #play again button
+                    againButton = pygame.Rect(width / 3, height - 65, width / 3, 50)
                     again = mediumFont.render("Play Again", True, black)
-                    scoreboard = mediumFont.render("Score Board", True, black)
                     againRect = again.get_rect()
-                    scoreboardRect = scoreboard.get_rect()
                     againRect.center = againButton.center
-                    scoreboardRect.center = scoreBoardButton.center
                     pygame.draw.rect(screen, white, againButton)
-                    pygame.draw.rect(screen, white, scoreBoardButton)
                     screen.blit(again, againRect)
-                    screen.blit(scoreboard,scoreboardRect)
                     click, _, _ = pygame.mouse.get_pressed()
                     if click == 1:
                         mouse = pygame.mouse.get_pos()
                         if againButton.collidepoint(mouse):
                             time.sleep(0.2)
                             board = ttt.initial_state()
-                        elif scoreBoardButton.collidepoint(mouse):
-                            time.sleep(0.2)
-                            showScoreBoard = True
+                            
                 else:
                     notAppended = True
 
