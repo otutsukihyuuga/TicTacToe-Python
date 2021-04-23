@@ -103,6 +103,7 @@ while True:
                     if notAppended:
                         scoreBoard.append(winner)
                         notAppended = False
+                        which_user = False
                     if winner is None:
                         title = "Game Over: Tie."
                     else:
